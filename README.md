@@ -32,7 +32,7 @@ The Amazon EC2 `RunInstances API CloudTrail` event provides a lot of tagging inf
 
 This CloudTrail event also provides detail about other resources that were created or updated when the EC2 instance was created. This means you can extract and automatically tag your instances with detail like the VPC ID and subnet ID.
 
-![alt text](https://raw.githubusercontent.com/jesusm-synergy/Automatization-of-Tag-Creator-based-on-Role-and-Parameter-Store/main/img/1.jpeg)
+![alt text](https://raw.githubusercontent.com/jesusm-synergy/Automatization-of-Tag-Creator-based-on-Role-and-Parameter-Store/main/img/1.jpg)
 
 ## Step 3: Store your required AWS resource tags
 
@@ -40,7 +40,7 @@ There are two options for storing your required resource tag keys and values. Yo
 
 **Option 1:** Apply your required resource tags to the resource creator’s IAM role. When the resource creator assumes the role to create a resource, the Lambda function described in this blog post retrieves the resource tags assigned to that IAM role.  The Lambda function then applies those retrieved IAM role tags to the newly created AWS resource.
 
-![alt text](https://raw.githubusercontent.com/jesusm-synergy/Automatization-of-Tag-Creator-based-on-Role-and-Parameter-Store/main/img/2.jpeg)
+![alt text](https://raw.githubusercontent.com/jesusm-synergy/Automatization-of-Tag-Creator-based-on-Role-and-Parameter-Store/main/img/2.jpg)
 
 **Option 2:** Use AWS Systems Manager Parameter Store to store tags per resource creator role or SSO user ID using a hierarchy called a path. For this example, use this path partitioning scheme:
 ```
@@ -51,7 +51,7 @@ Here is an example AWS CLI command to create a tag entry in Parameter Store. Thi
 aws ssm put-parameter --name /auto-tag/sso-role1/sso-user1/tag/team --value SouthEast-migration --type SecureString
 ```
 
-![alt text](https://raw.githubusercontent.com/jesusm-synergy/Automatization-of-Tag-Creator-based-on-Role-and-Parameter-Store/main/img/3.jpeg)
+![alt text](https://raw.githubusercontent.com/jesusm-synergy/Automatization-of-Tag-Creator-based-on-Role-and-Parameter-Store/main/img/3.jpg)
 
 
 ## Step 4: Authorize the Lambda function
@@ -70,7 +70,7 @@ aws iam create-role --role-name resource-auto-tagger-lambda-role --assume-role-p
 aws iam attach-role-policy --role-name resource-auto-tagger-lambda-role --policy-arn arn:aws:iam::123456789012:policy/resource-auto-tagger-lambda-permissions-policy
 ```
 
-![alt text](https://raw.githubusercontent.com/jesusm-synergy/Automatization-of-Tag-Creator-based-on-Role-and-Parameter-Store/main/img/4.jpeg)
+![alt text](https://raw.githubusercontent.com/jesusm-synergy/Automatization-of-Tag-Creator-based-on-Role-and-Parameter-Store/main/img/4.jpg)
 
 ## Step 5: Create the resource-auto-tagger Lambda function
 
@@ -82,7 +82,7 @@ The following example AWS CLI command creates the resource-auto-tagger Lambda fu
 aws lambda create-function --function-name resource-auto-tagger --runtime python3.8 --role arn:aws:iam::123456789012:role/resource-auto-tagger-lambda-role --timeout 6 --code S3Bucket=blog-demos,S3Key=auto-tag/resource-auto-tagger.zip,S3ObjectVersion=null --handler lambda_handler
 ```
 
-![alt text](https://raw.githubusercontent.com/jesusm-synergy/Automatization-of-Tag-Creator-based-on-Role-and-Parameter-Store/main/img/5.jpeg)
+![alt text](https://raw.githubusercontent.com/jesusm-synergy/Automatization-of-Tag-Creator-based-on-Role-and-Parameter-Store/main/img/5.jpg)
 
 ## Step 6: Create a rule in CloudWatch Events
 Create a rule in CloudWatch Events to trigger on the Amazon EC2 RunInstances API action. For information, see Creating a CloudWatch Events Rule That Triggers on an AWS API Call Using AWS CloudTrail in the Amazon CloudWatch Events User Guide. Use the following settings for the rule:
@@ -93,7 +93,7 @@ Create a rule in CloudWatch Events to trigger on the Amazon EC2 RunInstances API
 4. Choose Specific operation(s), and then enter RunInstances.
 5. For Targets, choose the Lambda function you created in Step 5.
 
-![alt text](https://raw.githubusercontent.com/jesusm-synergy/Automatization-of-Tag-Creator-based-on-Role-and-Parameter-Store/main/img/6.jpeg)
+![alt text](https://raw.githubusercontent.com/jesusm-synergy/Automatization-of-Tag-Creator-based-on-Role-and-Parameter-Store/main/img/6.jpg)
 
 ## Step 7: Verify the auto-tagging functionality
 After you deploy your Lambda function and give it the appropriate IAM permissions through an assigned IAM role, create your Parameter Store repository. This repository will store your required resources tags by identity and role. Now you can test and verify the auto-tagging functionality by simply creating an EC2 instance in your AWS account.
@@ -109,7 +109,7 @@ The following AWS CLI command shows how to view the resource tags applied to the
 aws ec2 describe-tags --filters
 ```
 
-![alt text](https://raw.githubusercontent.com/jesusm-synergy/Automatization-of-Tag-Creator-based-on-Role-and-Parameter-Store/main/img/7.jpeg)
+![alt text](https://raw.githubusercontent.com/jesusm-synergy/Automatization-of-Tag-Creator-based-on-Role-and-Parameter-Store/main/img/7.jpg)
 
 ## Cleanup
 
